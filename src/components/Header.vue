@@ -1,6 +1,6 @@
 <template>
     <el-row>
-        <el-col :span="24"
+        <el-col :span="24">
             <div class="head-wrap">Web-Terminal</div>
         </el-col>
     </el-row>
