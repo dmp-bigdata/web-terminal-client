@@ -38,10 +38,13 @@ export default {
     }
   },
   mounted() {
-    var containerWidth = window.screen.height;
-    var containerHeight = window.innerHeight; //window.screen.width;
+    var containerWidth = window.screen.width;
+    var containerHeight = window.innerHeight;
+    // console.log(containerWidth, containerHeight, window.screen.height);
+
     var cols = Math.floor((containerWidth - 30) / 9);
-    var rows = Math.floor(containerHeight / 17) - 2;
+    cols = cols > 120 ? 120 : cols; // 最大120，有些编辑器不支持80以上的
+    var rows = Math.floor((containerHeight - 60 - 20 - 20) / 17);
     console.log("cols", cols, "rows", rows);
     var url = "";
     if (this.username === undefined) {
@@ -84,7 +87,24 @@ export default {
     this.terminalSocket.onerror = this.errorRealTerminal;
     // create terminal
     let terminalContainer = document.getElementById("terminal");
-    this.term = new Terminal();
+    terminalContainer.style.height = containerHeight - 60 - 20 - 20 + "px";
+    this.term = new Terminal({
+      rendererType: "canvas", //渲染类型
+      rows, //行数
+      cols, // 设置之后会输入多行之后覆盖现象
+      convertEol: true, //启用时，光标将设置为下一行的开头
+      scrollback: 10, //终端中的回滚量
+      // fontSize: 14, //字体大小
+      disableStdin: false, //是否应禁用输入。
+      cursorStyle: "block", //光标样式
+      cursorBlink: true, //光标闪烁
+      tabStopWidth: 4,
+      theme: {
+        // foreground: "yellow", //字体
+        // background: "#060101", //背景色
+        // cursor: "help" //设置光标
+      }
+    });
 
     // Load WebLinksAddon on terminal, this is all that's needed to get web links
     // working in the terminal.
@@ -106,6 +126,8 @@ export default {
 
     // this.term.attach(this.terminalSocket);
     this.term._initialized = true;
+    this.term.focus();
+
     console.log("mounted is going on");
   },
   beforeDestroy() {
